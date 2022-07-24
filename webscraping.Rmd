@@ -1,0 +1,83 @@
+---
+title: "San Jose Seasons Visualization"
+author: "Cesar Nillaga"
+date: "7/24/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(rvest)
+library(gganimate)
+```
+
+
+# Webscraping and Cleaning of Data
+
+```{r}
+# URL for wikipedia page
+sharksurl <- "https://en.wikipedia.org/wiki/List_of_San_Jose_Sharks_seasons"
+
+# importing table of sharks season into r 
+# using the xpath from inspecting the page in Wikipedia
+setable <- read_html(sharksurl) %>%
+              html_node(xpath = '//*[@id="mw-content-text"]/div[1]/table[3]') %>%
+              html_table(fill = TRUE, header = TRUE)
+
+# making first row the headers of the data frame 
+# headers were read in as first row so felt it was necessary
+names(setable) <- as.matrix(setable[1, ])
+setable <- setable[-1, ]
+setable[] <- lapply(setable, function(x) type.convert(as.character(x)))
+
+# removing last row data frame because it had totals 
+setable <- setable[-nrow(setable), ]
+
+# grabbing necessary variables for visualizations 
+setable_work <- setable %>%
+  select(1, 12, 13, 5, 15)
+
+# Removing year of 2004-2005 as there was a lockout
+setable_work <- setable_work[-14, ]
+
+
+# converting finish to object numeric
+# if "-" in post season wins then result in 0 wins
+SJS <- setable_work %>%
+  mutate(Finish = as.numeric(str_sub(Finish, 1, 1)),        # extracting first character in string
+         W = as.numeric(W),         
+         Playoff_Wins = if_else(is.na(W) == TRUE, 0, W),
+         Season = round(as.integer(str_sub(Season,1, 4))),      # converting season to integer object
+         GF_Reg = as.numeric(GF),                                   # converting goals scored to numeric
+         GA_Reg = as.numeric(GA))                                   # converting goals scored against to numeric 
+```
+
+# Visualization of Sharks Season
+
+
+```{r}
+# creating visualization for Part 1 of midterm 
+sharks <- ggplot(SJS, aes(Season, Finish, fill = GF_Reg)) +         
+  geom_col() +
+  scale_fill_distiller(palette = "Reds", direction = 1) +
+  # making graph look more appealing 
+   theme(
+    panel.grid = element_blank(),
+    panel.grid.major.y = element_line("white"),
+    panel.ontop = TRUE
+  ) +
+  theme_minimal() + 
+  labs(fill = "Goals Scored",
+       caption = "*2004 NHL Lockout so season was cancelled.") +
+  ggtitle("Sharks Yearly Season Finished") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# creating animation 
+sharks + transition_states(Season, wrap = FALSE) +
+  shadow_mark()
+```
+
