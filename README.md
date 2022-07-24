@@ -1,4 +1,4 @@
-Consider the following Wikipedia page, which contains the list of seasons played by the San Jose Sharks hockey team: [](https://en.wikipedia.org/wiki/List_of_San_Jose_Sharks_seasons)
+Consider the following Wikipedia page, which contains the list of seasons played by the San Jose Sharks hockey team: [season link](https://en.wikipedia.org/wiki/List_of_San_Jose_Sharks_seasons)
 
 # Webscraping
 
