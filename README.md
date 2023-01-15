@@ -19,3 +19,5 @@ It is also fine if you have other variables in your dataset, as long as you have
 # Visualization 
 
 Once you have created the dataset, make a gganimate plot showing how the Sharks have performed over time.  
+
+![image](https://user-images.githubusercontent.com/102557726/212524959-679e3e24-d970-494e-a2f1-aa1596e500f5.png)
